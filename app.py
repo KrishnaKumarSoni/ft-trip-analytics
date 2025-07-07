@@ -406,7 +406,7 @@ def serve_static(path):
 
 @app.route('/<path:path>')
 def serve_react_app(path):
-    """Serve React app static files"""
+    """Serve React app for all other paths"""
     if os.path.exists(f'frontend/build/{path}'):
         return send_from_directory('frontend/build', path)
     # For React Router, return index.html for all other paths
