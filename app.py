@@ -399,6 +399,11 @@ def index():
         return send_from_directory('frontend/build', 'index.html')
     return jsonify({'message': 'Trip Analytics API is running'})
 
+@app.route('/static/<path:path>')
+def serve_static(path):
+    """Serve React static files (CSS, JS, etc.)"""
+    return send_from_directory('frontend/build/static', path)
+
 @app.route('/<path:path>')
 def serve_react_app(path):
     """Serve React app static files"""
