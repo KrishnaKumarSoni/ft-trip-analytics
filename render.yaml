@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: ft-trip-analytics
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "python app.py"
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: NODE_VERSION
+        value: 18.17.0
+    disk:
+      name: trip-analytics-disk
+      mountPath: /opt/render/project/src/generated_pdfs
+      sizeGB: 1 

@@ -4,7 +4,7 @@ import math
 import uuid
 import time
 from datetime import datetime
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -350,7 +350,20 @@ def generate_batch_pdfs(batch_id, df):
 
 @app.route('/', methods=['GET'])
 def index():
+    # Serve React frontend if available
+    if os.path.exists('frontend/build/index.html'):
+        return send_from_directory('frontend/build', 'index.html')
     return jsonify({'message': 'Trip Analytics API is running'})
+
+@app.route('/<path:path>')
+def serve_react_app(path):
+    """Serve React app static files"""
+    if os.path.exists(f'frontend/build/{path}'):
+        return send_from_directory('frontend/build', path)
+    # For React Router, return index.html for all other paths
+    if os.path.exists('frontend/build/index.html'):
+        return send_from_directory('frontend/build', 'index.html')
+    return jsonify({'error': 'Frontend not found'}), 404
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -587,4 +600,6 @@ def list_worksheets():
         return jsonify({'error': f'Error reading Excel file: {str(e)}'}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000) 
+    import os
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port) 
