@@ -93,6 +93,19 @@ Each PDF report includes:
 - Latitude/longitude in decimal degrees
 - Multiple trips can be included in one file (using trip_id column)
 
+## Deployment
+
+### Local Development
+Follow the setup instructions above for local development.
+
+### Production Deployment (Render)
+See `DEPLOYMENT.md` for detailed instructions on deploying to Render.
+
+**Important**: On Render's free tier:
+- PDFs are stored temporarily and auto-deleted after 1 hour
+- Download your files promptly after generation
+- No persistent storage available on free tier
+
 ## Technical Details
 
 - **Backend**: Python Flask with pandas for data processing

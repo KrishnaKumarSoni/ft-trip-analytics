@@ -21,10 +21,26 @@ CORS(app)
 
 # Create directories if they don't exist
 UPLOAD_FOLDER = 'uploads'
-PDF_FOLDER = 'generated_pdfs'
+PDF_FOLDER = '/tmp/generated_pdfs'  # Use temp directory for Render free tier
 for folder in [UPLOAD_FOLDER, PDF_FOLDER]:
     if not os.path.exists(folder):
         os.makedirs(folder)
+
+# Clean up any existing files in temp directory on startup
+def cleanup_temp_directory():
+    """Clean up temp directory on startup"""
+    try:
+        if os.path.exists(PDF_FOLDER):
+            for filename in os.listdir(PDF_FOLDER):
+                filepath = os.path.join(PDF_FOLDER, filename)
+                if os.path.isfile(filepath):
+                    os.remove(filepath)
+            print("Cleaned up temporary files on startup")
+    except Exception as e:
+        print(f"Error cleaning up temp directory: {str(e)}")
+
+# Clean up on startup
+cleanup_temp_directory()
 
 # Store batch processing status
 batch_jobs = {}
@@ -343,10 +359,38 @@ def generate_batch_pdfs(batch_id, df):
         batch_jobs[batch_id]['status'] = 'completed'
         print(f"Batch {batch_id} completed: {batch_jobs[batch_id]['completed_trips']} PDFs generated")
         
+        # Schedule cleanup after 1 hour (files in /tmp are temporary)
+        cleanup_thread = threading.Timer(3600, cleanup_old_files, args=[batch_id])
+        cleanup_thread.daemon = True
+        cleanup_thread.start()
+        
     except Exception as e:
         print(f"Batch processing error: {str(e)}")
         batch_jobs[batch_id]['status'] = 'error'
         batch_jobs[batch_id]['error'] = str(e)
+
+def cleanup_old_files(batch_id):
+    """Clean up old PDF files and batch job data"""
+    try:
+        # Clean up batch job data
+        if batch_id in batch_jobs:
+            batch_data = batch_jobs[batch_id]
+            
+            # Remove PDF files from temp directory
+            if 'pdfs' in batch_data:
+                for pdf_info in batch_data['pdfs']:
+                    filename = pdf_info['filename']
+                    filepath = os.path.join(PDF_FOLDER, filename)
+                    if os.path.exists(filepath):
+                        os.remove(filepath)
+                        print(f"Cleaned up file: {filename}")
+            
+            # Remove batch job data
+            del batch_jobs[batch_id]
+            print(f"Cleaned up batch job: {batch_id}")
+            
+    except Exception as e:
+        print(f"Error during cleanup: {str(e)}")
 
 @app.route('/', methods=['GET'])
 def index():

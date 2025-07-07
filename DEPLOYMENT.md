@@ -24,15 +24,7 @@
 ### 3. Environment Configuration
 The app will automatically detect the PORT environment variable from Render.
 
-### 4. Storage Configuration
-1. After deployment, go to your service dashboard
-2. Navigate to "Disks" tab
-3. Add a new disk:
-   - **Name**: `trip-analytics-disk`
-   - **Mount Path**: `/opt/render/project/src/generated_pdfs`
-   - **Size**: `1 GB` (free tier limit)
-
-### 5. Deploy
+### 4. Deploy
 1. Click "Create Web Service"
 2. Render will automatically build and deploy your application
 3. The build process will:
@@ -40,7 +32,7 @@ The app will automatically detect the PORT environment variable from Render.
    - Build React frontend
    - Start the Flask server
 
-### 6. Access Your Application
+### 5. Access Your Application
 - Your app will be available at: `https://your-app-name.onrender.com`
 - The React frontend will be served at the root URL
 - API endpoints will be available at `/upload`, `/generate-batch-reports`, etc.
@@ -52,7 +44,9 @@ The app will automatically detect the PORT environment variable from Render.
 ✅ **Batch Processing**: Background PDF generation
 ✅ **Progress Tracking**: Real-time progress updates
 ✅ **PDF Downloads**: Individual PDF downloads
-✅ **Persistent Storage**: PDFs stored on disk
+✅ **Temporary Storage**: PDFs stored temporarily (auto-cleanup after 1 hour)
+
+**Note**: On Render's free tier, PDFs are stored temporarily and automatically cleaned up after 1 hour. Download your files promptly after generation.
 
 ## Troubleshooting
 
@@ -70,13 +64,13 @@ The app will automatically detect the PORT environment variable from Render.
 - Free tier has limitations: 
   - 512MB RAM
   - CPU throttling after 750 hours/month
-  - 1GB disk storage
-- Consider upgrading to paid plans for production use
+  - Temporary storage only (files auto-deleted after 1 hour)
+- Consider upgrading to paid plans for production use with persistent storage
 
 ## Monitoring
 - Access logs and metrics in Render dashboard
 - Set up alerts for downtime or errors
-- Monitor disk usage for PDF storage
+- Monitor memory usage and processing times
 
 ## Updates
 To update the application:
